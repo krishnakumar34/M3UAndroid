@@ -1,34 +1,37 @@
-name: Android APK Build
+name: Build All APKs
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ "master" ]
-  pull_request:
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
+      - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
 
-      - name: Make gradle executable
-        run: chmod +x ./gradlew
+      - run: chmod +x ./gradlew
 
-      - name: Build Debug APK
-        run: ./gradlew :m3uandroid:assembleDebug     # <- Ensure module path is correct
+      - name: Build Smartphone Debug APK
+        run: ./gradlew :app:smartphone:assembleDebug
 
-      - name: Upload APK artifact
+      - name: Build TV Debug APK
+        run: ./gradlew :app:tv:assembleDebug
+
+      - name: Upload Smartphone APK
         uses: actions/upload-artifact@v4
         with:
-          name: m3uandroid-debug-apk
-          path: m3uandroid/build/outputs/apk/debug/*.apk
+          name: smartphone-debug-apk
+          path: app/smartphone/build/outputs/apk/debug/*.apk
+
+      - name: Upload TV APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: tv-debug-apk
+          path: app/tv/build/outputs/apk/debug/*.apk
           
